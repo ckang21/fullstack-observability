@@ -1,0 +1,12 @@
+replicaCount: 1
+
+image:
+  repository: fullstack-observability/api
+  tag: local
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 4000
+
+resources: {}
