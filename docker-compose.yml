@@ -9,5 +9,13 @@ services:
       - "5433:5432"
     volumes:
       - dbdata:/var/lib/postgresql/data
+  otel-collector:
+    image: otel/opentelemetry-collector:0.101.0
+    command: ["--config=/etc/otelcol-config.yaml"]
+    volumes:
+      - ./observability/otel-collector.yaml:/etc/otelcol-config.yaml:ro
+    ports:
+      - "4318:4318"  # OTLP HTTP ingest
+
 volumes:
   dbdata:
