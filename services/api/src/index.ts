@@ -3,11 +3,14 @@ import { ApolloServer } from 'apollo-server-express';
 import type { Express } from 'express';
 import { typeDefs, resolvers } from './schema.js';
 import { pool } from './db.js';
+import { runMigrations } from './migrate.js';
 
 const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 4000;
 
 async function createApp(): Promise<Express> {
   const app = express();
+
+  await runMigrations();
 
   app.get('/health', async (_req, res) => {
     try {
