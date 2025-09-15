@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "tsx watch src/index.ts",
+    "dev:otel": "OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4318 DATABASE_URL=postgres://postgres:postgres@localhost:5433/appdb tsx watch src/index.ts",
     "build": "tsc -p tsconfig.json",
     "start": "node dist/index.js",
     "test": "jest --passWithNoTests"
