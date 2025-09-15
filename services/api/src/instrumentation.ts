@@ -6,8 +6,6 @@ import { OTLPMetricExporter } from '@opentelemetry/exporter-metrics-otlp-http';
 import { PeriodicExportingMetricReader } from '@opentelemetry/sdk-metrics';
 
 const endpoint = process.env.OTEL_EXPORTER_OTLP_ENDPOINT; // e.g. http://localhost:4318
-
-// Set a service name without Resource import
 if (!process.env.OTEL_SERVICE_NAME) {
   process.env.OTEL_SERVICE_NAME = 'fullstack-observability-api';
 }
@@ -21,10 +19,27 @@ if (endpoint) {
     instrumentations: [getNodeAutoInstrumentations()],
   });
 
-  sdk.start().then(() => console.log('[otel] started'))
-    .catch((e) => console.error('[otel] failed', e));
+  // Handle both Promise-returning and void-returning start()
+  (async () => {
+    try {
+      if (typeof (sdk as any).start === 'function') {
+        await (sdk as any).start();
+      }
+      console.log('[otel] started');
+    } catch (e) {
+      console.error('[otel] failed', e);
+    }
+  })();
 
-  const shutdown = () => sdk.shutdown().finally(() => process.exit(0));
+  const shutdown = async () => {
+    try {
+      if (typeof (sdk as any).shutdown === 'function') {
+        await (sdk as any).shutdown();
+      }
+    } finally {
+      process.exit(0);
+    }
+  };
   process.on('SIGTERM', shutdown);
   process.on('SIGINT', shutdown);
 } else {
