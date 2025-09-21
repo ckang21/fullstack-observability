@@ -3,8 +3,12 @@ import { test, expect } from '@playwright/test';
 
 async function gql(request: any, query: string, variables?: any) {
   const res = await request.post('/graphql', {
-    data: { query, variables },
-  });
+      headers: {
+        'content-type': 'application/json',
+         'authorization': `Bearer ${process.env.API_TOKEN ?? 'devtoken'}`,
+      },
+      data: { query, variables },
+    });
   expect(res.status()).toBe(200);
   return res.json();
 }
