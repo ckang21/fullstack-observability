@@ -13,8 +13,7 @@ export default defineConfig({
   ],
   // Start the API for tests; note the path fix: ../../services/api
   webServer: {
-    command:
-      'sh -c "cd ../../services/api && DATABASE_URL=postgres://postgres:postgres@localhost:5433/appdb npx tsx src/index.ts"',
+    command: 'sh -c "cd ../../services/api && API_TOKEN=devtoken DATABASE_URL=postgres://postgres:postgres@localhost:5433/appdb npx tsx src/index.ts"',
     url: 'http://localhost:4000/health',
     reuseExistingServer: true,
     timeout: 60000,
