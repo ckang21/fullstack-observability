@@ -1,12 +1,37 @@
 replicaCount: 1
 
 image:
-  repository: fullstack-observability/api
-  tag: local
+  repository: fullstack-observability-api
+  tag: dev
   pullPolicy: IfNotPresent
 
 service:
   type: ClusterIP
   port: 4000
 
-resources: {}
+env:
+  API_TOKEN: devtoken
+  # For in-cluster Postgres service (if you deploy it as "postgres")
+  DATABASE_URL: postgres://postgres:postgres@postgres:5432/appdb
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 500m
+    memory: 256Mi
+
+probes:
+  liveness:
+    path: /health
+    initialDelaySeconds: 10
+    periodSeconds: 10
+    timeoutSeconds: 2
+    failureThreshold: 3
+  readiness:
+    path: /health
+    initialDelaySeconds: 5
+    periodSeconds: 5
+    timeoutSeconds: 2
+    failureThreshold: 3

@@ -1,3 +1,7 @@
+![CI](https://github.com/ckang21/fullstack-observability/actions/workflows/ci.yml/badge.svg)
+
+
+
 # Fullstack Observability Demo
 
 Small, production-minded demo that ties together:

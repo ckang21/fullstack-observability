@@ -13,6 +13,31 @@ async function createApp(): Promise<Express> {
 
   await runMigrations();
 
+  // Parse JSON before hitting /graphql so we can inspect req.body.query
+  app.use(express.json());
+
+  // Auth guard: require API_TOKEN for GraphQL mutations
+  app.use('/graphql', (req, res, next) => {
+    const isPost = req.method === 'POST';
+    const q = (req.body && typeof req.body.query === 'string') ? req.body.query : '';
+    const looksLikeMutation = isPost && q.toLowerCase().includes('mutation');
+
+    if (!looksLikeMutation) return next(); // queries are public
+
+    const required = (process.env.API_TOKEN || '').trim();
+    const auth = req.headers.authorization || '';
+    const token = auth.startsWith('Bearer ') ? auth.slice('Bearer '.length).trim() : '';
+
+    if (!required) {
+      // If no API_TOKEN configured, allow (dev convenience)
+      return next();
+    }
+    if (token !== required) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+    return next();
+  });
+
   app.get('/health', async (_req, res) => {
     try {
       await pool.query('SELECT 1');
@@ -22,22 +47,21 @@ async function createApp(): Promise<Express> {
     }
   });
 
-  const server = new ApolloServer({
-    typeDefs,
-    resolvers,
-  });
+  const server = new ApolloServer({ typeDefs, resolvers });
   await server.start();
   server.applyMiddleware({ app, path: '/graphql' });
 
   return app;
 }
 
-createApp().then((app) => {
-  app.listen({ port }, () => {
-    console.log(`API running on http://localhost:${port}`);
-    console.log(`GraphQL: http://localhost:${port}/graphql`);
+createApp()
+  .then((app) => {
+    app.listen({ port }, () => {
+      console.log(`API running on http://localhost:${port}`);
+      console.log(`GraphQL: http://localhost:${port}/graphql`);
+    });
+  })
+  .catch((err) => {
+    console.error('Failed to start app', err);
+    process.exit(1);
   });
-}).catch((err) => {
-  console.error('Failed to start app', err);
-  process.exit(1);
-});
