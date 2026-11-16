@@ -11,6 +11,12 @@
     "test": "jest --passWithNoTests"
   },
   "dependencies": {
+    "@opentelemetry/api": "^1.9.1",
+    "@opentelemetry/auto-instrumentations-node": "^0.64.6",
+    "@opentelemetry/exporter-metrics-otlp-http": "^0.205.0",
+    "@opentelemetry/exporter-trace-otlp-http": "^0.205.0",
+    "@opentelemetry/sdk-metrics": "~2.1.0",
+    "@opentelemetry/sdk-node": "^0.205.0",
     "apollo-server-express": "^3.13.0",
     "express": "^4.19.2",
     "graphql": "^16.9.0",
