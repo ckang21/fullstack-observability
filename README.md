@@ -30,6 +30,9 @@ DATABASE_URL=postgres://postgres:postgres@localhost:5433/appdb npm run dev
 # From repo root: start Collector + Prometheus + Grafana
 docker compose up -d otel-collector prometheus grafana
 
+# Once, from repo root: install the OpenTelemetry packages (they live in the root package.json)
+npm install
+
 # Run API with OpenTelemetry enabled
 cd services/api
 npm run dev:otel
